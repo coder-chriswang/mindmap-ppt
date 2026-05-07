@@ -74,7 +74,8 @@ The dev server is a Python static server. If `5173` is occupied by a stale proce
 - The range slider jumps directly to a preorder index.
 - The zoom slider controls camera distance, scaling the whole canvas from about `70%` to `140%`; default is `100%`.
 - The second control row shows the current node label and next node label.
-- Clicking a visible node moves the camera to that node's current-layout position without changing the selected node or expanded image.
+- Clicking a visible node moves the camera toward that node's current-layout position without changing the selected node or expanded image. Move the camera as little as possible: if the clicked node is already inside the central 40% of the viewport, do not move; otherwise shift just enough to bring it into that central band.
+- Changing the selected node should use the same central 40% camera rule: move as little as possible to bring the selected node into that central band.
 
 Keep all navigation paths going through `setActiveIndex()` so buttons, keyboard, slider, graph, and counter stay synchronized.
 
@@ -90,9 +91,9 @@ Keep all navigation paths going through `setActiveIndex()` so buttons, keyboard,
 - The visible viewport uses the actual `#mindmap` element size. The presentation stage should stretch with the browser window.
 - `layout.centerBaseline = 520` controls the horizontal path's baseline in logical canvas coordinates.
 - Completed branches are allowed to exceed the viewport and be clipped. Do not scale the camera view to fit them, because that makes nodes and text smaller.
-- When long path labels push leaf nodes toward the right edge, the camera should shift right and clip older left-side nodes so the selected node remains fully visible.
+- When long path labels push nodes toward the viewport edge, the camera should shift just enough to place the selected or clicked node inside the central 40% band.
 - Image nodes participate in normal layout. The node box must grow to contain the thumbnail or expanded image.
-- Expanded images may increase node height; camera logic should keep the selected node fully visible vertically and horizontally.
+- Expanded images may increase node height; camera logic should still use the central 40% band rule for the selected node.
 - SVG links should connect from node border to node border, using the full node box dimensions.
 - Node images should use `object-fit: contain` so oversized images shrink to the configured thumbnail/expanded bounds without cropping.
 - Image expand/collapse should be animated smoothly when selection changes. Preserve CSS transitions for the image container size and image transform.

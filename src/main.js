@@ -66,8 +66,7 @@ const layout = {
   stagePaddingX: 114,
   stagePaddingY: 72,
   centerBaseline: 520,
-  activeNodeViewportPadding: 94,
-  activeNodeVerticalPadding: 83,
+  cameraTargetCenterBand: 0.4,
 };
 
 let activeIndex = 0;
@@ -395,27 +394,8 @@ function computeViewport(model, targetIndex = null) {
   let viewportY = model.baseline - logicalViewport.height / 2;
 
   if (targetNode) {
-    const activeRightEdge = targetNode.x + targetNode.width / 2 + layout.activeNodeViewportPadding;
-    const activeLeftEdge = targetNode.x - targetNode.width / 2 - layout.activeNodeViewportPadding;
-
-    if (activeRightEdge > viewportX + logicalViewport.width) {
-      viewportX = activeRightEdge - logicalViewport.width;
-    }
-
-    if (activeLeftEdge < viewportX) {
-      viewportX = activeLeftEdge;
-    }
-
-    const targetTopEdge = targetNode.y - targetNode.height / 2 - layout.activeNodeVerticalPadding;
-    const targetBottomEdge = targetNode.y + targetNode.height / 2 + layout.activeNodeVerticalPadding;
-
-    if (targetBottomEdge > viewportY + logicalViewport.height) {
-      viewportY = targetBottomEdge - logicalViewport.height;
-    }
-
-    if (targetTopEdge < viewportY) {
-      viewportY = targetTopEdge;
-    }
+    viewportX = keepNodeInCenterBand(viewportX, logicalViewport.width, targetNode.x, layout.cameraTargetCenterBand);
+    viewportY = keepNodeInCenterBand(viewportY, logicalViewport.height, targetNode.y, layout.cameraTargetCenterBand);
   }
 
   return {
@@ -424,6 +404,22 @@ function computeViewport(model, targetIndex = null) {
     width: logicalViewport.width,
     height: logicalViewport.height,
   };
+}
+
+function keepNodeInCenterBand(viewportStart, viewportSize, nodeCenter, centerBandRatio) {
+  const bandPadding = (viewportSize * (1 - centerBandRatio)) / 2;
+  const bandStart = viewportStart + bandPadding;
+  const bandEnd = viewportStart + viewportSize - bandPadding;
+
+  if (nodeCenter < bandStart) {
+    return nodeCenter - bandPadding;
+  }
+
+  if (nodeCenter > bandEnd) {
+    return nodeCenter - viewportSize + bandPadding;
+  }
+
+  return viewportStart;
 }
 
 function positionMapLayer(viewport, model) {
