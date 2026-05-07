@@ -58,7 +58,7 @@ This is a small static front-end demo for a PPT-like animated mind map.
 - Syntax check: `npm run check`
 - Dev URL: `http://127.0.0.1:5173/`
 
-The dev server is a Python static server. If `5173` is occupied by a stale process, restart that process before validating in the browser.
+The dev server is a dependency-free Node.js static server. If `5173` is occupied by a stale process, restart that process before validating in the browser.
 
 ## Core Files
 
