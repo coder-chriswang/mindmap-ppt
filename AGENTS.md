@@ -4,7 +4,7 @@
 
 This is a small static front-end demo for a PPT-like animated mind map.
 
-- Input data is an unordered-list Markdown tree embedded in `src/main.js`.
+- Project data lives in `project/source.js`, which exports the unordered-list Markdown tree consumed by `src/main.js`.
 - The tree is traversed in preorder.
 - Nodes are rendered as HTML elements so their boxes can grow to contain text.
 - Links are rendered as SVG curves behind the HTML nodes.
@@ -31,19 +31,19 @@ This is a small static front-end demo for a PPT-like animated mind map.
   - second line -> normal-size title
 - Single-line labels render as a normal one-line node title.
 - Control readouts may collapse multiline labels into an inline preview such as `副标题 / 主标题`.
-- A node may optionally attach one illustration with an `@image` metadata continuation line:
+- A node may optionally attach one illustration with an `@image` metadata continuation line. Use paths relative to `index.html`:
 
 ```md
 - 展示设计
   画布布局与动画策略
-  @image ./assets/illustrations/layout.svg
+  @image ./project/assets/illustrations/layout.svg
 ```
 
 - `@image` lines are metadata only:
   - They do not appear in node text.
   - A node may have at most one image.
   - Supported image formats are whatever browser `<img>` supports; use PNG, JPG/JPEG, or SVG for project assets.
-  - Prefer local project-relative paths such as `./assets/illustrations/example.svg`, `./assets/illustrations/example.png`, or `./assets/illustrations/example.jpg`.
+  - Prefer local project-relative paths such as `./project/assets/illustrations/example.svg`, `./project/assets/illustrations/example.png`, or `./project/assets/illustrations/example.jpg`.
   - If multiple `@image` lines are added to one node, the latest parsed value wins.
 - Illustrations render inside their node card:
   - selected image nodes show the image expanded below the node text
@@ -62,9 +62,10 @@ The dev server is a Python static server. If `5173` is occupied by a stale proce
 ## Core Files
 
 - `index.html`: page shell and top controls.
-- `src/main.js`: Markdown parsing, preorder navigation, layout model, HTML node sync, SVG link sync.
+- `project/source.js`: project Markdown data. Replace this file to change the mind map content.
+- `project/assets/illustrations/`: project illustration assets referenced by `@image`.
+- `src/main.js`: imports project data, parses Markdown, handles preorder navigation, layout model, HTML node sync, SVG link sync.
 - `src/styles.css`: page styling, node/link styling, slider styling, animations.
-- `assets/illustrations/`: optional local illustration assets referenced by `@image`.
 - `p.md`: original product prompt/spec.
 
 ## Interaction Rules
