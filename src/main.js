@@ -52,22 +52,22 @@ const counter = document.querySelector("#counter");
 const prevButton = document.querySelector("#prevButton");
 const nextButton = document.querySelector("#nextButton");
 const nodeSlider = document.querySelector("#nodeSlider");
+const zoomSlider = document.querySelector("#zoomSlider");
+const zoomValue = document.querySelector("#zoomValue");
 const currentNodeText = document.querySelector("#currentNodeText");
 const nextNodeText = document.querySelector("#nextNodeText");
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const layout = {
-  minNodeWidth: 112,
-  minNodeHeight: 44,
-  pathGap: 76,
-  rowGap: 58,
-  stagePaddingX: 88,
+  minNodeWidth: 146,
+  minNodeHeight: 57,
+  pathGap: 99,
+  rowGap: 75,
+  stagePaddingX: 114,
   stagePaddingY: 72,
   centerBaseline: 520,
-  viewWidth: 960,
-  viewHeight: 620,
-  activeNodeViewportPadding: 72,
-  activeNodeVerticalPadding: 64,
+  activeNodeViewportPadding: 94,
+  activeNodeVerticalPadding: 83,
 };
 
 let activeIndex = 0;
@@ -78,6 +78,7 @@ let renderedNodes = new Map();
 let renderedLinks = new Map();
 let cameraTargetIndex = null;
 let currentNodeMetrics = new Map();
+let cameraZoom = Number(zoomSlider.value) / 100;
 
 assignTreeMetadata(root);
 preorder = collectPreorder(root);
@@ -89,6 +90,10 @@ prevButton.addEventListener("click", () => setActiveIndex(activeIndex - 1));
 nextButton.addEventListener("click", () => setActiveIndex(activeIndex + 1));
 nodeSlider.addEventListener("input", (event) => {
   setActiveIndex(Number(event.target.value));
+});
+zoomSlider.addEventListener("input", (event) => {
+  cameraZoom = Number(event.target.value) / 100;
+  render();
 });
 window.addEventListener("keydown", (event) => {
   if (event.key === "ArrowDown") {
@@ -189,7 +194,7 @@ function render() {
 
   syncLinks(model.links);
   syncNodes(model.nodes, activeNode);
-  positionMapLayer(viewport);
+  positionMapLayer(viewport, model);
   updateControls();
 }
 
@@ -370,8 +375,13 @@ function getNodeMetric(node) {
 }
 
 function computeViewport(model, targetIndex = null) {
+  const viewportSize = getViewportSize();
+  const logicalViewport = {
+    width: viewportSize.width / cameraZoom,
+    height: viewportSize.height / cameraZoom,
+  };
   if (model.nodes.length === 0) {
-    return { x: 0, y: 0, width: layout.viewWidth, height: layout.viewHeight };
+    return { x: 0, y: 0, width: logicalViewport.width, height: logicalViewport.height };
   }
 
   const pathNodes = model.nodes.filter((node) => node.isPath);
@@ -381,15 +391,15 @@ function computeViewport(model, targetIndex = null) {
   const activeNode = model.nodes.find((node) => node.isActive);
   const targetNode =
     targetIndex === null ? activeNode : model.nodes.find((node) => node.preorderIndex === targetIndex) ?? activeNode;
-  let viewportX = pathCenterX - layout.viewWidth / 2;
-  let viewportY = model.baseline - layout.viewHeight / 2;
+  let viewportX = pathCenterX - logicalViewport.width / 2;
+  let viewportY = model.baseline - logicalViewport.height / 2;
 
   if (targetNode) {
     const activeRightEdge = targetNode.x + targetNode.width / 2 + layout.activeNodeViewportPadding;
     const activeLeftEdge = targetNode.x - targetNode.width / 2 - layout.activeNodeViewportPadding;
 
-    if (activeRightEdge > viewportX + layout.viewWidth) {
-      viewportX = activeRightEdge - layout.viewWidth;
+    if (activeRightEdge > viewportX + logicalViewport.width) {
+      viewportX = activeRightEdge - logicalViewport.width;
     }
 
     if (activeLeftEdge < viewportX) {
@@ -399,8 +409,8 @@ function computeViewport(model, targetIndex = null) {
     const targetTopEdge = targetNode.y - targetNode.height / 2 - layout.activeNodeVerticalPadding;
     const targetBottomEdge = targetNode.y + targetNode.height / 2 + layout.activeNodeVerticalPadding;
 
-    if (targetBottomEdge > viewportY + layout.viewHeight) {
-      viewportY = targetBottomEdge - layout.viewHeight;
+    if (targetBottomEdge > viewportY + logicalViewport.height) {
+      viewportY = targetBottomEdge - logicalViewport.height;
     }
 
     if (targetTopEdge < viewportY) {
@@ -411,22 +421,35 @@ function computeViewport(model, targetIndex = null) {
   return {
     x: viewportX,
     y: viewportY,
-    width: layout.viewWidth,
-    height: layout.viewHeight,
+    width: logicalViewport.width,
+    height: logicalViewport.height,
   };
 }
 
-function positionMapLayer(viewport) {
-  const frameWidth = mindmap.clientWidth || layout.viewWidth;
-  const frameHeight = mindmap.clientHeight || layout.viewHeight;
-  const scale = Math.min(frameWidth / viewport.width, frameHeight / viewport.height);
+function positionMapLayer(viewport, model) {
+  const canvas = computeCanvasSize(model, viewport);
 
-  mapLayer.style.width = `${layout.viewWidth}px`;
-  mapLayer.style.height = `${layout.viewHeight}px`;
-  linkLayer.setAttribute("viewBox", `0 0 ${layout.viewWidth} ${layout.viewHeight}`);
-  mapLayer.style.transform = `translate(${frameWidth / 2}px, ${frameHeight / 2}px) scale(${scale}) translate(${
-    -viewport.x - viewport.width / 2
-  }px, ${-viewport.y - viewport.height / 2}px)`;
+  mapLayer.style.width = `${canvas.width}px`;
+  mapLayer.style.height = `${canvas.height}px`;
+  linkLayer.setAttribute("viewBox", `0 0 ${canvas.width} ${canvas.height}`);
+  mapLayer.style.transform = `scale(${cameraZoom}) translate(${-viewport.x}px, ${-viewport.y}px)`;
+}
+
+function computeCanvasSize(model, viewport) {
+  const maxNodeRight = model.nodes.reduce((maxRight, node) => Math.max(maxRight, node.x + node.width / 2), 0);
+  const maxNodeBottom = model.nodes.reduce((maxBottom, node) => Math.max(maxBottom, node.y + node.height / 2), 0);
+
+  return {
+    width: Math.max(viewport.x + viewport.width, maxNodeRight + layout.stagePaddingX),
+    height: Math.max(viewport.y + viewport.height, maxNodeBottom + layout.stagePaddingY),
+  };
+}
+
+function getViewportSize() {
+  return {
+    width: Math.max(1, mindmap.clientWidth),
+    height: Math.max(1, mindmap.clientHeight),
+  };
 }
 
 function syncNodes(nodes, activeNode) {
@@ -605,6 +628,8 @@ function updateControls() {
   counter.textContent = `${activeIndex + 1} / ${preorder.length}`;
   nodeSlider.value = String(activeIndex);
   nodeSlider.style.setProperty("--slider-progress", `${sliderProgress}%`);
+  zoomSlider.value = String(Math.round(cameraZoom * 100));
+  zoomValue.textContent = `${Math.round(cameraZoom * 100)}%`;
   currentNodeText.textContent = formatInlineLabel(activeNode.label);
   nextNodeText.textContent = nextNode ? formatInlineLabel(nextNode.label) : "结束";
   prevButton.disabled = activeIndex === 0;

@@ -72,6 +72,7 @@ The dev server is a Python static server. If `5173` is occupied by a stale proce
 - Up/down arrow keys move to previous/next preorder node.
 - Top arrow buttons do the same.
 - The range slider jumps directly to a preorder index.
+- The zoom slider controls camera distance, scaling the whole canvas from about `70%` to `140%`; default is `100%`.
 - The second control row shows the current node label and next node label.
 - Clicking a visible node moves the camera to that node's current-layout position without changing the selected node or expanded image.
 
@@ -83,11 +84,12 @@ Keep all navigation paths going through `setActiveIndex()` so buttons, keyboard,
 - Already visited but non-path branches appear above their parent and preserve tree structure.
 - Unvisited nodes are completely hidden and occupy no layout space.
 - The horizontal selected path should stay visually stable.
-- The camera uses a fixed close view:
-  - `layout.viewWidth = 960`
-  - `layout.viewHeight = 620`
-  - `layout.centerBaseline = 520`
-- Completed branches are allowed to exceed the viewport and be clipped. Do not enlarge the camera view to fit them, because that makes later nodes look smaller.
+- Default node and text sizing is intentionally large, roughly 30% larger than the original compact demo.
+- The camera pans across a fixed logical canvas and must not auto-scale nodes or text because of browser aspect ratio. Node and font sizes stay in CSS pixels unless the user changes the zoom slider.
+- The zoom slider is the only intended way to scale the whole canvas.
+- The visible viewport uses the actual `#mindmap` element size. The presentation stage should stretch with the browser window.
+- `layout.centerBaseline = 520` controls the horizontal path's baseline in logical canvas coordinates.
+- Completed branches are allowed to exceed the viewport and be clipped. Do not scale the camera view to fit them, because that makes nodes and text smaller.
 - When long path labels push leaf nodes toward the right edge, the camera should shift right and clip older left-side nodes so the selected node remains fully visible.
 - Image nodes participate in normal layout. The node box must grow to contain the thumbnail or expanded image.
 - Expanded images may increase node height; camera logic should keep the selected node fully visible vertically and horizontally.
@@ -113,6 +115,10 @@ Keep all navigation paths going through `setActiveIndex()` so buttons, keyboard,
   - entering state: `scale(0.58)`, `opacity: 0`
   - active selected state: `scale(1.15)`, `opacity: 1`
   - normal unselected state: `scale(1)`
+- Node movement, resizing, selection, and deselection should feel presentation-like and relatively slow:
+  - node box movement/size transitions are roughly `820ms`-`860ms`
+  - node content transform transitions are roughly `920ms`
+  - image thumbnail/expanded transitions are roughly `920ms`
 - Do not reintroduce keyframe-based transform fill for node pop. It previously prevented selected nodes from animating back down to normal size.
 - Selected nodes keep a stable orange glow via box-shadow; do not use a spreading ring effect unless explicitly requested.
 - Link reveal animation is still keyframe-based and should be preserved:
