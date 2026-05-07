@@ -31,19 +31,20 @@ This is a small static front-end demo for a PPT-like animated mind map.
   - second line -> normal-size title
 - Single-line labels render as a normal one-line node title.
 - Control readouts may collapse multiline labels into an inline preview such as `副标题 / 主标题`.
-- A node may optionally attach one illustration with an `@image` metadata continuation line. Use paths relative to `index.html`:
+- A node may optionally attach one illustration with an `@image` metadata continuation line. Use paths relative to `project/assets/illustrations/`:
 
 ```md
 - 展示设计
   画布布局与动画策略
-  @image ./project/assets/illustrations/layout.svg
+  @image layout.svg
 ```
 
 - `@image` lines are metadata only:
   - They do not appear in node text.
   - A node may have at most one image.
   - Supported image formats are whatever browser `<img>` supports; use PNG, JPG/JPEG, or SVG for project assets.
-  - Prefer local project-relative paths such as `./project/assets/illustrations/example.svg`, `./project/assets/illustrations/example.png`, or `./project/assets/illustrations/example.jpg`.
+  - Prefer short local paths such as `example.svg`, `example.png`, or `diagrams/example.jpg`; they resolve to `./project/assets/illustrations/...`.
+  - Full relative paths such as `./project/assets/illustrations/example.svg`, absolute paths, data URLs, and HTTP(S) URLs remain supported when needed.
   - If multiple `@image` lines are added to one node, the latest parsed value wins.
 - Illustrations render inside their node card:
   - selected image nodes show the image expanded below the node text

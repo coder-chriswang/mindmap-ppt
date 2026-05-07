@@ -1,0 +1,88 @@
+---
+name: mindmap-ppt-builder
+description: Create or update content for the agegr/mindmap-ppt static presentation project from a prose draft, article, speech, report, or notes. Use when Codex needs to turn a written document into the project's project/source.js Markdown mind-map data, choose which nodes need illustrations, generate or request GPT Image 2 illustrations matching the project's restrained presentation style, place assets under project/assets/illustrations, and validate the result with npm run check.
+---
+
+# Mindmap PPT Builder
+
+## Goal
+
+Turn a source document into a presentation-ready `project/source.js` for this repo. The output is a preorder mind-map: concise two-line nodes, optional node images, and local assets that match the current light PPT style.
+
+Read `references/project-format.md` when you need exact project file conventions or visual constraints.
+
+## Workflow
+
+1. Read the user's document and identify the presentation thesis.
+2. Build a shallow tree:
+   - root: document/source name or presentation topic
+   - level 1: 2-4 major sections
+   - level 2: 2-4 subpoints per section
+   - level 3: only when needed for concrete examples, evidence, or workflow steps
+3. Write each node as one unordered-list item plus an optional continuation line:
+
+```md
+- 副标题
+  主标题
+```
+
+Use the first line as a short category label and the second line as the main message. Keep each line under about 30 Chinese characters or 8 English words.
+
+4. Choose image nodes sparingly:
+   - Pick 3-8 high-information nodes for a typical deck.
+   - Prefer nodes that summarize a process, architecture, comparison, timeline, metric, or conceptual model.
+   - Do not image every leaf.
+   - Avoid images for purely transitional or obvious nodes.
+5. Generate illustrations for chosen nodes with GPT Image 2 or the available image generation tool. Save them under `project/assets/illustrations/`.
+   - If API details are needed, consult current official OpenAI image generation docs before writing code or commands.
+6. Reference images in Markdown metadata lines:
+
+```md
+  @image process-overview.png
+```
+
+7. Replace `project/source.js` with:
+
+```js
+export const sourceMarkdown = `
+- ...
+`;
+```
+
+8. Run `npm run check`.
+9. If possible, run or refresh the local page and inspect several early, middle, and late preorder nodes.
+
+## Image Prompt Pattern
+
+Use this style prompt for GPT Image 2:
+
+```text
+Create a clean presentation illustration for a light PPT mind-map node.
+Subject: <node main idea>.
+Include: <2-4 concrete visual elements from the source text>.
+Style: restrained vector-like editorial illustration, warm off-white background, dark teal #183a4a, muted green #eef7f3, orange accent #d8894f, simple geometric shapes, thin shadows, small 8px-radius card-like forms, no photorealism, no text, no logos, no busy decorations.
+Composition: centered, generous whitespace, readable at thumbnail size, aspect ratio 16:10.
+```
+
+If the source needs a real chart, diagram, or screenshot, create a simple diagrammatic illustration instead of inventing precise numbers. Do not put text in images; labels belong in nodes.
+
+## Authoring Rules
+
+- Preserve the user's argument. Do not flatten important causal relationships into generic slogans.
+- Keep the preorder reveal useful: each next node should add a clear idea.
+- Put implementation details and examples in leaves; put conclusions in ancestors.
+- Use `@image` only after the node's title line, before its children.
+- Use PNG, JPG/JPEG, or SVG assets.
+- Save image files under `project/assets/illustrations/`.
+- Prefer short `@image` values relative to that folder, e.g. `@image user-journey.png` or `@image diagrams/user-journey.png`.
+- If no image-generation tool is available, still add good `@image` filenames only if you create placeholder assets; otherwise omit `@image` and tell the user images were not generated.
+
+## Validation Checklist
+
+- `project/source.js` exports `sourceMarkdown`.
+- Markdown indentation uses 4 spaces per level for child nodes.
+- Continuation lines use the same indentation as metadata/text for that node.
+- `@image` values are short paths relative to `project/assets/illustrations/`, unless a full URL or explicit relative path is required.
+- Asset files exist for every `@image`.
+- Root has two lines: eyebrow/subtitle then main title.
+- `npm run check` passes.

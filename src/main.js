@@ -87,7 +87,7 @@ function parseMarkdownTree(markdown) {
 
           if (continuationParent) {
             if (continuationText.startsWith("@image ")) {
-              continuationParent.image = continuationText.slice("@image ".length).trim();
+              continuationParent.image = resolveImagePath(continuationText.slice("@image ".length).trim());
               return;
             }
 
@@ -129,6 +129,14 @@ function assignTreeMetadata(treeRoot) {
   collectPreorder(treeRoot).forEach((node, index) => {
     node.preorderIndex = index;
   });
+}
+
+function resolveImagePath(path) {
+  if (/^(https?:|data:|\/|\.\/|\.\.\/)/.test(path)) {
+    return path;
+  }
+
+  return `./project/assets/illustrations/${path}`;
 }
 
 function collectPreorder(node, list = []) {

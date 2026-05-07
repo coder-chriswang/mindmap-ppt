@@ -1,12 +1,12 @@
 export const sourceMarkdown = `
 - Markdown Mindmap
   项目汇报思维导图演示
-  @image ./project/assets/illustrations/overview.svg
+  @image overview.svg
     - 需求分析
       用户目标与演示场景
         - 核心流程
           从根节点开始逐步展开
-          @image ./project/assets/illustrations/flow.svg
+          @image flow.svg
             - 入口说明
               先展示项目整体目标
             - 交互说明
@@ -23,7 +23,7 @@ export const sourceMarkdown = `
               保留父子连接和路径
     - 展示设计
       画布布局与动画策略
-      @image ./project/assets/illustrations/layout.svg
+      @image layout.svg
         - 路径布局
           当前路径保持横向稳定
             - 主线节点
@@ -33,7 +33,7 @@ export const sourceMarkdown = `
             - 未访问内容
               隐藏且不占布局空间
         - 节点弹出与曲线绘制
-          @image ./project/assets/illustrations/animation.svg
+          @image animation.svg
             - 节点动画
               进入时轻微缩放淡入
             - 曲线动画
