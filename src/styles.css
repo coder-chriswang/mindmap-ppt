@@ -255,11 +255,31 @@ h1 {
 
 .zoom-control {
   display: grid;
-  grid-template-columns: auto minmax(80px, 1fr) 44px;
+  grid-template-columns: 24px minmax(72px, 1fr) minmax(4.5ch, max-content);
   align-items: center;
   gap: 8px;
   min-height: 68px;
   padding: 0 12px;
+}
+
+.zoom-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: #6b745d;
+}
+
+.zoom-icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .zoom-control input {
@@ -305,17 +325,14 @@ h1 {
   box-shadow: 0 3px 10px rgba(24, 36, 42, 0.18);
 }
 
-.readout-label {
-  color: #6b745d;
-  font-size: 0.76rem;
-  font-weight: 850;
-}
-
 .zoom-control strong {
-  overflow: hidden;
+  min-width: 4.5ch;
+  overflow: visible;
   color: #172033;
   font-size: 0.95rem;
   font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
