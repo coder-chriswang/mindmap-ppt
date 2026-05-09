@@ -8,44 +8,6 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="stage-topbar" aria-label="Presentation controls">
-        <div>
-          <p class="eyebrow" id="deckSubtitle">Markdown Mindmap</p>
-          <h1 id="deckTitle">root</h1>
-        </div>
-        <div class="controls" aria-label="节点演示操作区">
-          <div class="control-main">
-            <label class="node-scrubber" for="nodeSlider">
-              <input id="nodeSlider" type="range" min="0" max="0" value="0" aria-label="快速定位节点" />
-              <span class="counter" id="counter">1 / 1</span>
-            </label>
-            <div class="node-readout" aria-live="polite">
-              <div class="readout-item readout-current">
-                <span class="readout-label">当前</span>
-                <strong id="currentNodeText">root</strong>
-              </div>
-              <div class="readout-item">
-                <span class="readout-label">下一个</span>
-                <strong id="nextNodeText">a</strong>
-              </div>
-              <label class="zoom-control" for="zoomSlider">
-                <span class="readout-label">远近</span>
-                <input id="zoomSlider" type="range" min="70" max="140" value="100" aria-label="调整相机远近" />
-                <strong id="zoomValue">100%</strong>
-              </label>
-            </div>
-          </div>
-          <div class="step-buttons">
-            <button class="icon-button" id="prevButton" type="button" aria-label="上一个节点" title="上一个节点">
-              <span aria-hidden="true">↑</span>
-            </button>
-            <button class="icon-button" id="nextButton" type="button" aria-label="下一个节点" title="下一个节点">
-              <span aria-hidden="true">↓</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
       <section class="presentation-frame">
         <div id="mindmap" role="img" aria-label="Animated mindmap presentation">
           <div class="map-layer" id="mapLayer">
@@ -53,6 +15,45 @@
             <div class="node-layer" id="nodeLayer"></div>
           </div>
         </div>
+
+        <section class="floating-ui" aria-label="Presentation controls">
+          <div class="title-panel glass-panel">
+            <p class="eyebrow" id="deckSubtitle">Markdown Mindmap</p>
+            <h1 id="deckTitle">root</h1>
+          </div>
+
+          <div class="controls glass-panel" aria-label="节点演示操作区">
+            <div class="control-main">
+              <label class="node-scrubber" for="nodeSlider">
+                <input id="nodeSlider" type="range" min="0" max="0" value="0" aria-label="快速定位节点" />
+                <span class="counter" id="counter">1 / 1</span>
+              </label>
+              <div class="node-readout" aria-live="polite">
+                <div class="readout-item readout-current">
+                  <span class="readout-label">当前</span>
+                  <strong id="currentNodeText">root</strong>
+                </div>
+                <div class="readout-item">
+                  <span class="readout-label">下一个</span>
+                  <strong id="nextNodeText">a</strong>
+                </div>
+                <label class="zoom-control" for="zoomSlider">
+                  <span class="readout-label">远近</span>
+                  <input id="zoomSlider" type="range" min="70" max="140" value="100" aria-label="调整相机远近" />
+                  <strong id="zoomValue">100%</strong>
+                </label>
+              </div>
+            </div>
+            <div class="step-buttons">
+              <button class="icon-button" id="prevButton" type="button" aria-label="上一个节点" title="上一个节点">
+                <span aria-hidden="true">↑</span>
+              </button>
+              <button class="icon-button" id="nextButton" type="button" aria-label="下一个节点" title="下一个节点">
+                <span aria-hidden="true">↓</span>
+              </button>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
 
