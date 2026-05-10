@@ -55,9 +55,9 @@ npx skills add agegr/mindmap-ppt --skill mindmap-ppt-builder --agent codex --glo
 
 ## 使用方式
 
-1. 打开或 clone 这个仓库。
-2. 把文稿交给已安装 `mindmap-ppt-builder` 的 Agent。
-3. 让 Agent 生成或更新 `project` 内容。
-4. 打开在线演示或本地预览查看效果。
+1. 安装 Skill
+2. 把文稿交给 Agent
+3. 让 Agent 生成或更新 `project` 内容
+4. 打开在线演示或本地预览查看效果
 
 正常情况下，Agent 只会更新 `project` 里的内容和图片素材。除非你明确要求修改展示功能，否则不需要改应用代码。
